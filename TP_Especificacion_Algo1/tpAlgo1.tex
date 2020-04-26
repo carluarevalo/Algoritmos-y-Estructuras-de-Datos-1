@@ -1,0 +1,426 @@
+\documentclass[a4paper]{article}
+\input{Algo1Macros}
+
+\usepackage{a4wide}
+\usepackage{amsmath, amscd, amssymb, amsthm, latexsym}
+\usepackage[spanish,activeacute]{babel}
+\usepackage{enumerate}
+
+\setlength{\parskip}{0.1em}
+\usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+
+\newcommand{\coord}{\textit{GPS}}
+\newcommand{\tiempo}{\textit{Tiempo}}
+\newcommand{\recorrido}{\textit{Recorrido}}
+\newcommand{\viaje}{\textit{Viaje}}
+\newcommand{\distancia}{\textit{Dist}}
+\newcommand{\name}{\textit{Nombre}}
+\newcommand{\grilla}{\textit{Grilla}}
+
+
+\begin{document}
+
+\titulo{TP de Especificación}
+\fecha{\today}
+\materia{Algoritmos y Estructuras de Datos I}
+\grupo{Grupo: El Matriarcado}
+
+% Pongan cuantos integrantes quieran
+\integrante{Arévalo, Carla}{307/14}{carlii95@gmail.com}
+\integrante{Gurruchaga, Sofía}{173/18}{sofigurru@gmail.com}
+\integrante{Juarez, Nazareth}{}{madenajr@gmail.com}
+\integrante{González, Sheila}{801/18}{gonzsheilam@gmail.com}
+
+\maketitle
+
+\section{Problemas}
+
+Ejercicio 1
+
+\vspace{5mm}
+
+\begin{proc}{enTerritorio}{\In v: \viaje ,\In r: \distancia, \Out res: $\bool$}{}
+    \pre{ \ esViajeValido(v) \ \wedge \ r \ \textgreater \ 0 \ }
+    \post{ \ res = True \Iff (\exists \ centro: \coord)((\forall i:\ent)( \ 0 \leq i < \longitud v  \ \implicaLuego \ dist(centro, v[i]$_1$) \leq r) ) \ }
+    \end{proc}
+
+\vspace{5mm}
+
+Ejercicio 2
+
+\vspace{5mm}
+
+\begin{proc}{excesoDeVelocidad}{\In v: $\viaje$, \Out res: $\bool$}{}
+\pre{ \ esViajeValido(v) \ }
+\post{ \ res = True \Iff huboExcesoDeVelocidad(v) \ }
+    
+\end{proc}
+    
+\vspace{5mm}
+
+\auxpred{huboExcesoDeVelocidad}{v: \viaje}{ \ (\exists i: \ent)(\exists j: \ent)(( \ 0 \leq i < \longitud v  \ \yLuego \ 0 \leq j < \longitud v) \ \wedge \ sonParadasSiguientes(v,i,j)) \ \wedge \ velocidad(v,i,j) \ \textgreater \ 80)}
+
+\vspace{5mm}
+
+\aux{velocidad}{v: \viaje, i: \ent, j:\ent}{\ent}{ \ dist(v[i]$_1$,v[j]$_1$)/(v[j]$_0$ - v[i]$_0$)}
+    
+\vspace{5mm}
+
+Ejercicio 3
+
+\vspace{5mm}
+
+\begin{proc}{tiempoTotal}{\In v: $\viaje$, \Out t: $\tiempo$}{}
+    \pre{ \ esViajeValido(v) \ }
+    \post{ \ t = ultimaParada(v) - primeraParada(v) \ }
+\end{proc}
+
+\vspace{5mm}
+
+\aux{ultimaParada}{v: \viaje}{\tiempo}{\sum_{i=0}^ {\longitud v -1} \ \IfThenElse{(esElMaximoTiempo(v,i))}{v[i]$_0$}{0} }
+
+\vspace{5mm}
+
+\auxpred{esElMaximoTiempo}{v: \viaje, i:\ent}{ \ \neg(\exists j: \ent)( \ 0 \leq j < \longitud v \yLuego v[j]$_0$ \ \textgreater \ v[i]$_0$) \ }
+ 
+\vspace{5mm}
+
+\aux{primeraParada}{v: \viaje}{\tiempo}{\sum_{i=0}^ {\longitud v - 1} \ \IfThenElse{(esElMinimoTiempo(v,i))}{v[i]$_0$}{0}}
+
+\vspace{5mm}
+
+ \auxpred{esElMinimoTiempo}{v: \viaje, i:\ent}{ \ \neg(\exists j:\ent)( \ 0 \leq j < \longitud v \yLuego v[j]$_0$ \ \textless \ v[i]$_0$) \ }
+
+\vspace{5mm}
+
+Ejercicio 4
+
+\vspace{5mm}
+
+\begin{proc}{distanciaTotal}{\In v: \viaje, \Out d: \distancia}{}
+    \pre{ \ esViajeValido(v) \ }
+    \post{ \ d = distanciaRecorrida(v) \ }
+\end{proc}    
+
+\vspace{5mm}
+
+\aux{distanciaRecorrida}{v: \viaje}{\distancia}{\sum_{i=0}^ {\longitud v - 1} \ \IfThenElse{(existeParadaSiguiente(v,i))}{dist(v[i]$_1$, gPSParadaSiguiente(v,i))}{0}}
+
+\vspace{5mm}
+
+\auxpred{existeParadaSiguiente}{ v: \viaje, i: \ent}{ \ (\exists j:\ent)(( \ 0 \leq i < \longitud v \ \yLuego \ v[i]$_0$ \textless v[j]$_0$) \ \wedge \ \neg(\exists k: \ent)( \ 0 \leq k < \longitud v \ \yLuego \ v[i]$_0$ \ \textless \ v[k]$_0$ \ \textless \ v[j]$_0$))}
+
+\vspace{5mm}
+
+\aux{gPSParadaSiguiente}{v: \viaje,i: \ent}{\coord}{\sum_{k=0}^ {\longitud v - 1} \ \IfThenElse{(sonParadasSiguiente(v,i,k))}{v[k]$_1$}{0}}
+    
+\vspace{5mm}
+
+Ejercicio 5
+
+\vspace{5mm}
+
+\begin{proc}{flota}{\In v: \TLista \viaje, \In $t_0$: \tiempo, \In $t_f$: \tiempo,  \Out res: \ent}{}
+    \pre{ \ (\forall i:\ent) ( \ 0 \leq i < \longitud v \implicaLuego \ esViajeValido(v[i]) \ \wedge \ 0 \ \leq \ $t_0$  \ \textless \ $t_f$ ) \ }
+    \post{ \ res = \ \sum_{j=0}^ {\longitud v - 1} \ \IfThenElse{(viajoEnLaFranja(v,j))}{1}{0} \ }
+\end{proc}
+
+\vspace{5mm}
+
+\auxpred{viajoEnLaFranja}{v: \TLista \viaje, j: \ent}{ \ (\exists i:\ent)( \ 0 \leq i < |v[j]| \ \yLuego \ $t_0$ \ \leq \ v[j[i]$_0$] \ \leq \ $t_f$) \ }
+
+\vspace{5mm}
+
+Ejercicio 6
+
+\vspace{5mm}
+
+\begin{proc}{recorridoCubierto}{\In v: \viaje,\In r: \recorrido,\In u: \distancia, \Out res: \TLista \coord}{}
+    \pre{\ esViajeValido(v) \ }
+    \post{ \ (\forall i:\ent)(( \ 0 \leq i < \longitud r \ \yLuego \ \neg ( \ puntoCubierto(r,i,v,u)) \ \implicaLuego \ r[i] \in res \ ) }
+\end{proc}    
+
+\vspace{5mm}
+
+\auxpred{puntoCubierto}{r: \recorrido, i: \ent,v: \viaje,u: \distancia}{ \ (\exists j:\ent)( \ 0 \leq j < \longitud v \ \yLuego \ dist(v[j]$_1$, r[i]) \ \textless \ u}
+
+\vspace{5mm}
+
+Ejercicio 7
+
+\vspace{5mm}
+
+\begin{proc}{construirGrilla}{\In esq1: \coord, \ \In esq2: \coord, \ \In n: \ent, \ \In m: \ent, \ \Out g: \grilla}{}
+    \pre{ \ coordenadasValidas(esq1,esq2) \ \wedge \ (n \ \textgreater \ 0) \ \wedge \ (m \ \textgreater \ 0) \ \wedge \ conseguirLadoLatitudinal(esq1,esq2,n) = conseguirLadoLongitudinal(esq1,esq2,m) \ }
+    \post{ \ grillaOK(g,esq1,esq2,n,m) \ }
+\end{proc}
+
+\vspace{5mm}
+
+\auxpred{coordenadasValidas}{esq1: \coord, \ esq2: \coord}{ \ -90 \leq esq2$_0$ \ \textless \ esq1$_0$ \leq 90 \ \wedge \ -180 \leq esq1$_1$ \ \textless \ esq2$_1$ \leq 180 \ }
+
+\vspace{5mm}
+
+\aux{conseguirLadoLatitudinal}{esq1: \coord, \ esq2: \coord, n: \ent}{\float}{ \ (esq1$_0$ - esq2$_0$)/n \ }
+
+\vspace{5mm}
+   
+\aux{conseguirLadoLongitudinal}{esq1: \coord, \ esq2: \coord, m: \ent}{\float}{ \ (esq2$_1$ - esq1$_1$)/m \ }
+
+\vspace{5mm}
+
+\auxpred{cantidadCeldasOK}{g: \grilla,esq1: \coord, esq2: \coord}{ \ \longitud g = n*m \ }
+
+\vspace{5mm}
+
+
+\auxpred{gpsOK}{g: \grilla, \ esq1: \coord, \ esq2: \coord, \ n: \ent, \ m: \ent, \ indLat: \ent, \ indLong: \ent, \ i: \ent}{ \ (g[i]$_0__0$ = esq1$_0$ - conseguirLadoLatitudinal(esq1,\ esq2, \ n) * indLat) \ \wedge \ ( \ g[i]$_0__1$ = esq1$_1$ + conseguirLadoLongitudinal(esq1, \ esq2, \ m) * indLong) \ \wedge \ ( \ g[i]$_1__0$ = esq2$_0$ + conseguirLadoLatitudinal(esq1, \ esq2, \ n) * indLat) \ \wedge \ ( \ g[i]$_1__1$ = esq2$_1$ - conseguirLadoLongitudinal(esq1,\ esq2, \ m) * indLong) \ }
+ 
+\vspace{5mm}
+
+\auxpred{nombreOK}{g: \grilla, \ esq1: \coord, \ esq2: \coord, \ indLat: \ent, \ indLong: \ent, \ i: \ent}{ \ ( \ g[i]$_2__0$ = indLat + 1) \ \wedge \ ( \ g[i]$_2__1$ = indLong + 1) \ }
+
+\vspace{5mm}
+
+Ejercicio 8
+
+\vspace{5mm}
+
+\begin{proc}{aPalabra}{\In trayecto: \TLista \coord, \ \In g: \grilla,\  \Out res: \TLista \name}{}
+    \pre{ \ trayectoValido(trayecto) \ \wedge \ grillaOK(g) \ \wedge \ trayectoEnGrilla(trayecto,g) \ }
+    \post{ \ |res| = |trayecto| \ \wedge \ (\forall i:\ent)(( \ 0 \leq i < |trayecto|  \ \wedge \ (\exists j: \ent)(0 \leq j \ \textless \ \longitud g) \ \yLuego \break  puntoDeTrayectoEnAlgunaCeldaDeGrilla(trayecto,g,i,j)) \implicaLuego \ res[i] = g[j]$_2$) \ }
+\end{proc}    
+
+\vspace{5mm}
+
+\auxpred{trayectoValido}{trayecto: \TLista \coord}{ \ (\forall i:\ent)( \ 0 \leq i < |trayecto| \implicaLuego \ (-90 \leq trayecto[i]$_0$ \leq 90 \ \wedge \ -180 \leq trayecto[i]$_1$ \leq 180) ) \ }
+
+\vspace{5mm}
+
+
+\auxpred{trayectoEnGrilla}{trayecto: \TLista \coord, \ g: \grilla}{ \ (\forall i:\ent)( \ 0 \leq i < |trayecto| \implicaLuego \ (\exists j: \ent )( \ 0 \leq j \ \textless \ \longitud g \ \yLuego \ puntoDeTrayectoEnAlgunaCeldaDeLaGrilla(trayecto,g,i,j)) \ }
+
+\vspace{5mm}
+
+\auxpred{puntoDeTrayectoEnAlgunaCeldaDeLaGrilla}{trayecto: \TLista \coord, \ g: \grilla, \ i: \ent, \ j: \ent}{ \ (g[j]$_1__0$ \leq trayecto[i]$_0$ \leq g[j]$_0__0$ \ \wedge \ g[j]$_0__1$ \leq trayecto[i]$_1$ \leq g[j]$_1__1$) \ }
+    
+\vspace{5mm}
+
+Ejercicio 9
+
+\vspace{5mm}
+
+\begin{proc}{cantidadDeSaltos}{\In g: \grilla, \ \In v: \viaje, \ \Out res: \ent}{}
+    \pre{ \ grillaOK(g) \ \wedge \ esViajeValido(v) \ }
+    \post{ \ res = numeroDeSaltos(g,v) \ }
+\end{proc}    
+
+\vspace{5mm}
+
+\aux{numeroDeSaltos}{g: \grilla, \ v: \viaje}{\ent}{ \ \sum_{i=0}^ {\longitud v - 1} \ \IfThenElse{(hayUnSalto(v,g,i))}{1}{0}}
+
+\vspace{5mm}
+
+\auxpred{hayUnSalto}{v: \viaje, \ g: \grilla, \ i: \ent}{ \ (\exists j:\ent)( \ 0 \leq j < \longitud v  \ \yLuego \ sonParadasSiguientes(v, i, j) \ \wedge \ \neg ( \ losPuntosEstanComoMuchoAUnaCeldaDeDistancia(v,g,i,j)))\ }
+
+\vspace{5mm}  
+
+\auxpred{losPuntosEstanComoMuchoAUnaCeldaDeDistancia}{v: \viaje, \ g: \grilla, \ i: \ent, \ j: \ent}{ \ (\exists k: \ent)(\exists l: \ent)( \ 0 \leq k < \longitud g \ \yLuego \ 0 \leq l < \longitud g \ \yLuego \ (( \ g[k]$_1_0$ \leq v[i]$_1_0$ \leq g[k]$_0_0$ \ \wedge \ g[k]$_0_1$ \leq v[i]$_1_1$ \leq g[k]$_1_1$ \ ) \ \wedge \ ( \ g[l]$_1_0$ \leq v[j]$_1_0$ \leq g[l]$_0_0$ \ \wedge \ g[l]$_0_1$ \leq v[j]$_1_1$ \leq g[l]$_1_1$ \ )  \ \wedge \  (( \ (g[k]$_2_1$ = g[l]$_2_1$ \ \wedge \  g[k]$_2_2$ =  g[l]$_2_2$ \ ) \ \vee \  ( \ g[k]$_2_1$ = g[l]$_2_1$ \ \wedge \  g[k]$_2_2$ =  g[l]$_2_2$ + 1 \ \vee \  g[k]$_2_2$ =  g[l]$_2_2$ - 1 \ )) \ \vee \ ( \ g[k]$_2_2$ = g[l]$_2_2$ \ \wedge \ ( g[k]$_2_1$ =  g[l]$_2_1$ + 1 \ \vee \  g[k]$_2_1$ =  g[l]$_2_1$ - 1)))) \ }
+
+\vspace{5mm}
+
+Ejercicio 10
+
+\vspace{5mm}
+
+ \begin{proc}{completarHuecos}{\Inout v: \viaje, \ \In faltantes: \TLista \ent}{}
+    \pre{ \ v = v0 \ \wedge \ esViajeValido(v0) \ \wedge \ faltantesValido(faltantes,v0) \ }
+    \post{ \ \longitud v = |v0| \ \yLuego \ (\forall i: \ent)( \ (0 \leq i \ \textless \ |v0| \ \yLuego \ i \in faltantes \ ) \wedge \ (\exists j:\ent)(\exists k:\ent)(( \ 0 \leq j < |v0| \ \yLuego \ 0 \leq k < |v0|) \ \wedge \ tieneParadasQueLlenenElHueco(v,i,j,k) \ \implicaLuego \ v[i] = llenarHuecos(v0,i,j,k) ) ) \ }
+\end{proc}    
+
+\vspace{5mm}
+
+\auxpred{faltantesValido}{faltantes: \TLista \ent, \ v: \viaje}{ \ (\forall i: \ent)( \ i \in faltantes \implicaLuego \ ( \ 0 \leq i < |v0| \ \wedge \ ( \ v0[i]$_0$ \geq 0 \ \wedge \ v0[i]$_1__0$ = 0 \ \wedge \ v0[i]$_1__1$ = 0 ))) \ }
+
+\vspace{5mm}
+
+\aux{llenarHuecos}{v0: \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{\textless \tiempo \ x \coord \textgreater}{ \ (v0[i]$_1__0$ = posLatitudinalxMRU(v,i,j,k) \ \wedge \ v0[i]$_1__1$ = posLongitudinalxMRU(v,i,j,k) \ ) )}
+
+\vspace{5mm}
+
+\auxpred{tieneParadasQueLlenenElHueco}{v: \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{ \ j \notin faltantes \ \wedge \ k \notin faltantes \ \wedge \ (v[j]$_0$ \ \textless \ v[i]$_0$ \ \textless \ v[k]$_0$) \ \wedge \ \neg(\exists l:\ent)((\exists m:\ent)( \ ( \ 0 \leq l < |v0| \ \ \wedge \ 0 \leq m < |v0| \ \wedge \ ( \ l \notin faltantes \ \wedge \ m \notin faltantes \ ) \ \wedge \ v[j]$_0$ \ \textless \ v[l]$_0$ \ \textless \ v[i]$_0$ \ \textless \ v[m]$_0$ \ \textless \ v[k]$_0$))) \ }
+
+\vspace{5mm}
+
+
+\aux{posLatitudinalxMRU}{v: \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{\float}{ \ (v[i]$_1__0$ = v[j]$_1__0$ + ((v[k]$_1__0$ - v[j]$_1__0$)/(v[k]$_0$ - v[j]$_0$)) * (v[i]$_0$ - v[j]$_0$) \ }
+
+\vspace{5mm}
+
+\aux{posLongitudinalxMRU}{v: \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{\float}{ \ (v[i]$_1__1$ = v[j]$_1__1$ + ((v[k]$_1__1$ - v[j]$_1__1$)/(v[k]$_0$ - v[j]$_0$)) * (v[i]$_0$ - v[j]$_0$) \ }
+
+\vspace{5mm}
+
+
+Ejercicio 11
+
+\vspace{5mm}
+
+\begin{proc}{histograma}{\In xs: \TLista \viaje, \ \In bins: \ent, \ \Out cuentas: \TLista \ent, \ \Out limites: \TLista \float}{}
+\pre{ \ listaDeViajesValida(xs) \ }
+\post{           \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /* \ primero  \ detallo \ para \ límites \ */
+
+
+     
+( \ \mid limites \mid \ = bins + 1 \ \wedge \ (\forall i: \ent)( \ 0 \leq i < |limites| \ \implicaLuego \ limites[i] = minVelMax(xs) + i * anchoBin(xs,bins)) \ ) \ \wedge \ 
+       
+     \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /* \ ahora detallo para cuentas \ */
+       
+( \ \mid cuentas \mid \ = bins \ \wedge \ cuentas[|cuentas|-1] = cantDeElemEnUltimoBin(xs,bins) \ \wedge \ (\forall p: \ent)( \ 0 \leq p \ \leq \ |cuentas|-2 \ \implicaLuego \ cuentas[p] = cantElemEnPBin(xs,p,bins)) \ ) \ }
+\end{proc}
+
+\vspace{5mm}
+
+\auxpred{listaDeViajesValida}{xs: \TLista \viaje}{ (\forall i: \ent)( \ 0 \leq i \ \textless \ |xs|  \implicaLuego viajeValido(xs[i]) ) \ }
+
+\vspace{5mm}
+
+\aux{anchoBin}{xs: \TLista \viaje, \ bins: \ent}{\float}{ \ (maxVelMax(xs) - minVelMax(xs)) / bins }
+
+\vspace{5mm}
+
+\aux{cantElemEnPBin}{xs: \TLista \viaje, \ p: \ent, \ bins: \ent}{\ent}{ \ \sum_{i=0}^ {|xs|-1} \ \ if \ \ (estaEnElpBin(xs,p,i,bins)) \ \ then \break 1 \ \ else \ \ 0 \ \ fi}
+
+\vspace{5mm}
+
+\aux{cantElemEnUltimoBin}{xs: \TLista \viaje, \ bins: \ent}{\ent}{ \ \sum_{i=0}^ {|xs|-1} \ \ if \ \ (estaEnUltimoBin(xs,i,bins)) \ \ then \break  1 \ \ else \ \ 0 \ fi}
+
+\vspace{5mm}
+
+\auxpred{estaEnElpBin}{xs: \TLista \viaje, \ p: \ent, \ i: \ent, \ bins: \ent}{ \ minVelMax(xs) + (p * anchoBin(xs,bins)) \leq velMaxDelViaje(xs,i) \ \textless \ minVelMax(xs) + ((p+1) * anchoBin(xs,bins)) \ }
+
+\vspace{5mm}
+
+\auxpred{estaEnElUltimoBin}{xs: \TLista \viaje, \ i: \ent, \ bins: \ent}{ \ maxVelMax(xs) - anchoBin(xs,bins) \leq velMaxDelViaje(xs,i) \leq maxVelMax(xs) \ }
+
+\vspace{5mm}
+
+\auxpred{noHayOtraVelMayor}{xs: \TLista \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{ \ \neg(\exists l: \ent)((\exists m: \ent)(( \ 0 \leq l < |xs[i]| \ \yLuego \ 0 \leq m < |xs[i]|) \ \yLuego \ sonParadasSiguientesEnViajes(xs,i,l,m) \ \wedge \ (dist(xs[i[l]$_1$],xs[i[m]$_1$]))/(xs[i[m]$_0$] - xs[i[l]$_0$])) \ \textgreater \ velocidadEntrejYk(xs,i,j,k)))\ }
+
+\vspace{5mm}
+
+\auxpred{sonParadasSiguientesEnViajes}{xs: \TLista \viaje, \ i: \ent, \ j: \ent, \ k: \ent}{ \ (xs[i[j]$_0$] \textless xs[i[k]$_0$]) \ \wedge \ \neg(\exists p: \ent)( \ 0 \leq p \ \textless \ |xs[i]| \ \yLuego \ xs[i[j]$_0$] \ \textless \ xs[i[p]$_0$]) \ \textless \ xs[i[k]$_0$]) \ }
+
+\vspace{5mm}
+
+Ejercicio 12
+
+\vspace{5mm}
+
+\begin{proc}{limpiar}{\Inout r: \TLista \viaje, \ \Out borrados: \TLista \ent}{}
+\pre{ \ r = r0 \ \wedge \ listaDeViajesValida(r0)}
+\post{          \ \ \ \ \ \ \ \ \ \ \ \ \  /* \ primero \ detallo \ para \ borrados \ */
+ 
+     
+     
+(\forall i: \ent)(\ 0 \leq i \textless |r0| \ \yLuego \ esViajeExtremo(r0,i) \ \implicaLuego \ i \in borrados) \ \wedge \ (\forall j: \ent)( \ j  \in borrados \implica ( \ 0 \leq j \ \textless \ |r0| \ \wedge \ esViajeExtremo(r0,j))  \ \wedge \ 
+
+     \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /* \ ahora detallo para r \ */
+     
+\longitud r = \mid r0| \ \wedge \ (\forall i: \ent)( \ 0 \leq i \ \textless \ |r0| \ \yLuego \ ( \ i \in borrados \ \implicaLuego \ |r[i]| = 0) \ )}
+\end{proc}
+
+\vspace{5mm}
+
+\auxpred{esViajeExtremo}{r0: \TLista \viaje, \ i: \ent}{ \ maxVelMax(r0) - anchoBin10(r0) \leq velMaxDelViaje(r0,i)  \leq  maxVelMax(r0) \ }
+
+\vspace{5mm}
+
+\aux{anchoBin10}{r0: \TLista \viaje}{\float}{
+(\ maxVelMax(r0) - minVelMax(r0) \ )/10
+}
+
+\vspace{5mm}
+
+\section{Predicados y Auxiliares generales}
+
+---------------------------------------------------
+                 Auxiliares
+---------------------------------------------------
+\vspace{5mm}
+
+\aux{maxVelMax}{xs: \TLista \viaje}{\float}{ \ \sum_{i=0}^ {|xs| - 1} \ \ if \ \ (estaVelMaxDelViajeEsLaMayorDeTodas(xs,i)) \ \ then \break velMaxDelViaje(xs,i) \ \ else \ \ 0 \ \ fi }
+
+\vspace{5mm}
+
+\aux{minVelMax}{xs: \TLista \viaje}{\float}{ \ \sum_{i=0}^ {|xs| - 1} \ if \ estaVelMaxDelViajeEsLaMenorDeTodas(xs,i) \ then \break velMaxDelViaje(xs,i) \ else \ 0 \ fi }
+
+\vspace{5mm}
+
+\aux{velMaxDelViaje}{xs: \TLista \viaje, i: \ent}{\float}{ \ \sum_{j=0}^ {|xs[i]|- 1} \ \ if \ \ esVelocidadMaxima(xs,i,j) \ \ then \break velocidadEntrejYk(xs,i,j,k) \ \ else \ \ 0 \ fi}
+
+\vspace{5mm}
+
+\aux{velocidadEntrejYk}{xs: \TLista \viaje, i: \ent,j: \ent,k: \ent}{\float}{ \ (dist(xs[i[j]$_1$],xs[i[k]$_1$]))/((xs[i[k]$_0$] - xs[i[j]$_0$])}
+
+\vspace{5mm}
+
+
+---------------------------------------------------
+                 Predicados
+----------------------------------------------------
+\vspace{5mm}
+
+\auxpred{esViajeValido}{v: \viaje}{ \ |v| \ \textgreater \ 1 \ \wedge \ (\forall i:\ent) ( 0 \leq i < \longitud v \implicaLuego tiempoValido(v) \wedge (-90 \leq v[i]$_1_0$ \leq 90) \wedge (-180 \leq v[i]$_1_1$ \leq 180))}
+
+\vspace{5mm}
+
+\auxpred{estaVelMaxDelViajeEsLaMayorDeTodas}{xs: \TLista \viaje, \ i: \ent}{ \ \neg(\exists q: \ent)( \ ( \ 0 \leq q < |xs| \ \yLuego \ velMaxDelViaje(xs,i) \ \textless \ velMaxDelViaje(xs,q)) \ }
+
+\vspace{5mm}
+
+\auxpred{estaVelMaxDelViajeEsLaMenorDeTodas}{xs: \TLista \viaje, \ i: \ent}{ \ \neg(\exists q: \ent)( \ 0 \leq q < |xs| \ \yLuego \ velMaxDelViaje(xs,i) \ \textgreater \ velMaxDelViaje(xs,q)) \ }
+
+\vspace{5mm}
+
+\auxpred{esVelocidadMaxima}{xs: \TLista \viaje, i: \ent, j: \ent}{ \ (\exists k: \ent)( \ 0 \leq k < |xs[i]| \ \yLuego \ sonParadasSiguientesEnViajes(xs,i,j,k) \yLuego \ noHayOtraVelMayor(xs,i,j,k)) \ }
+
+\vspace{5mm}
+
+
+\auxpred{grillaOK}{g: \grilla, \ esq1: \coord, \ esq2: \coord,\ n: \ent, \ m: \ent}{ \ cantidadDeCeldasOK(g,n,m) \ \wedge \ (\forall i:\ent)( \ 0 \leq i < \longitud g  \ \implicaLuego \ (\exists \ indLat:\ent)(\exists \ indLong:\ent) ((0 \leq indLat < n \ \yLuego \ 0 \leq indLong < m )  \wedge \ gpsOK(g,esq1,esq2,n,m,indLat,indLong,i) \ \wedge \ nombreOK(g,esq1,esq2,n,m,indLat,indLong,i))) \ }
+ 
+\vspace{5mm}
+
+\auxpred{sonParadasSiguientes}{v: \viaje, i: \ent, j:\ent}{ \ v[i]$_0$ \textless \  v[j]$_0$ \ \wedge \ \neg(\exists x: \ent)(0 \leq x < \longitud v \ $\yLuego$ v[i]$_0$ \ \textless \ v[x]$_0$ \ \textless \ v[j]$_0$)}
+
+\vspace{5mm}
+
+\auxpred{tiempoValido}{v: \viaje}{ \ (\forall i:\ent)(\forall j:\ent) ( 0 \leq i < \longitud v  \ \wedge \ (v[i]$_0$ = v[j]$_0$) \implicaLuego (v[i]$_0$ \textgreater 0 \ \wedge \ v[i]$_1$ = v[j]$_1$)) }
+
+\vspace{5mm}
+
+
+
+
+
+
+\section{Decisiones tomadas}
+A lo largo del trabajo se presentaron ciertas disyuntivas sobre cómo definir algunos conceptos respecto a la problemática de los viajes, por lo tanto se tomaron una serie de decisiones que ayudaron a la definición de los mismos y consecuentemente a la especificación de los problemas. 
+\begin{enumerate}
+ 
+\item Ante la disyuntiva de qué es viajar consideramos que un viaje consiste de al menos 2 elementos registrados en el viaje puesto que si hubiese sólo uno (o, peor aún, ninguno) no estaríamos viajando a ningún lado (¡o ni siquiera existiendo!) 
+
+\item Ante la problemática de qué implicaría que un colectivo viaje dentro de una franja horaria decidimos que lo haría si y sólo si en algún momento del recorrido se registró al menos un punto en ese intervalo de tiempo. 
+
+\item A la hora de grillar, como no quedaba claro si se pedía que las celdas fueran un cuadrilátero cualquiera o exactamente cuadradas se decidió que los lados de cada celda fueran iguales (y por lo tanto, las celdas fueran cuadradas).
+
+\item A la hora de considerar si un trayecto estaba contenido en una grilla o no, el Gobierno de Córdoba decidió que éste en su totalidad esté incluído en la misma.
+
+\item Como lo establece la consigna, un salto en el trayecto de un colectivo se produce cuando dos puntos del viaje consecutivos temporalmente se encuentran a dos o más celdas de distancia, pero nada dice de cómo deben estar unidas esas celdas, por lo que consideramos que una celda es consecutiva a otra si estas comparten un lado (es decir, que la segunda está o bien arriba o abajo, o a la izquierda o la derecha de la primera). Es decir, de este modo se descarta como posibilidad que celdas consecutivas se encuentren en diagonal puesto que estarían a exactamente 2 celdas de distancia.
+
+\item A la hora de completar huecos en el viaje cuando se produjera un faltante se consideró que el colectivo viajaría a velocidad constante entre los dos puntos inmediatamente anteriores y posteriores al hueco que no fueran también faltantes. Esto es fundamental en la resolución puesto que se logró calcular la posición para ese tiempo con datos faltantes considerando entonces un MRU.
+
+\item Al confeccionar el histograma se tuvieron en cuenta como límites la máxima velocidad máxima y la mínima velocidad máxima de todos los viajes comprendidos en xs. 
+\end{enumerate}
+\end{document}
